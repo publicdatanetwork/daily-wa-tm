@@ -1,0 +1,37 @@
+name: Daily
+
+on:
+  schedule:
+    # 6h30 UTC = 8h30 Paris en été (7h30 en hiver — GitHub ne gère pas les fuseaux).
+    # Doit rester APRÈS le workflow « Suivi quotidien » du dépôt collaborateurs
+    # (cron 05:47 UTC, synchro Supabase vers 06:08) : sinon le digest part
+    # avant que les mouvements du jour ne soient en base.
+    - cron: "30 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  diffuser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node src/daily.mjs
+        env:
+          DATA_SUPABASE_URL: ${{ secrets.DATA_SUPABASE_URL }}
+          DATA_SUPABASE_KEY: ${{ secrets.DATA_SUPABASE_KEY }}
+          AUTH_SUPABASE_URL: ${{ secrets.AUTH_SUPABASE_URL }}
+          AUTH_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.AUTH_SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+          WHATSAPP_PHONE_ID: ${{ secrets.WHATSAPP_PHONE_ID }}
+          WHATSAPP_TEMPLATE: ${{ secrets.WHATSAPP_TEMPLATE }}

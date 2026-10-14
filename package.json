@@ -1,0 +1,11 @@
+{
+  "name": "daily-wa-tm",
+  "private": true,
+  "type": "module",
+  "description": "Diffusion quotidienne du DataParl' Daily vers WhatsApp et Telegram",
+  "scripts": {
+    "daily": "node src/daily.mjs",
+    "test": "node --test test/"
+  },
+  "engines": { "node": ">=20" }
+}
